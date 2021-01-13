@@ -353,6 +353,26 @@ all =
                         >> Query.has
                             [ style "border-left" <| "1px solid " ++ borderGrey ]
                 ]
+            , context "when hovering over the pinned icon"
+                hoverOver
+                Message.Message.TopBarPinIcon
+                [ it "shows correct text when there's resources pinned" <|
+                    Application.handleCallback
+                        (Callback.ResourcesFetched <|
+                            Ok
+                                [ Data.resource (Just "v1") ]
+                        )
+                        >> Tuple.first
+                        >> .queryView
+                        >> Query.find [ id "tooltips" ]
+                        >> Query.children []
+                        >> Query.index -1
+                        >> Query.findAll [ tag "tr" ]
+                        >> Query.index 1
+                        >> Query.has [ text "step", text "20s" ]
+                , it "shows correct text when there's no resources pinned" <|
+                    ""
+                ]
             ]
         , rspecStyleDescribe
             "when on pipeline page for an instanced pipeline"

@@ -21,6 +21,7 @@ import Application.Application as Application
 import Concourse
 import Concourse.BuildStatus exposing (BuildStatus(..))
 import Data
+import EffectTransformer exposing (ET)
 import Expect exposing (Expectation)
 import Html
 import Html.Attributes as Attr
@@ -265,6 +266,55 @@ defineHoverBehaviour { name, setup, query, unhoveredSelector, hoverable, hovered
                     |> query
                     |> Query.has unhoveredSelector.selector
         ]
+
+
+hoverOver : Message.Message.DomID -> ET Application.Model
+hoverOver domID =
+    Application.update
+        (Update (Message.Message.Hover (Just domID)))
+        >> Tuple.first
+        >> Application.handleDelivery
+            (ClockTicked OneSecond <|
+                Time.millisToPosix 1
+            )
+        >> Tuple.first
+        >> Application.handleCallback
+            (Callback.GotViewport domID <|
+                Ok
+                    { scene =
+                        { width = 1
+                        , height = 0
+                        }
+                    , viewport =
+                        { width = 1
+                        , height = 0
+                        , x = 0
+                        , y = 0
+                        }
+                    }
+            )
+        >> Tuple.first
+        >> Application.handleCallback
+            (Callback.GotElement <|
+                Ok
+                    { scene =
+                        { width = 0
+                        , height = 0
+                        }
+                    , viewport =
+                        { width = 0
+                        , height = 0
+                        , x = 0
+                        , y = 0
+                        }
+                    , element =
+                        { x = 0
+                        , y = 0
+                        , width = 1
+                        , height = 1
+                        }
+                    }
+            )
 
 
 
