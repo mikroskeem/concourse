@@ -64,7 +64,7 @@ func ContainerMounts(privileged bool, initBinPath string) []specs.Mount {
 				Source:      initBinPath,
 				Destination: "/tmp/gdn-init",
 				Type:        "bind",
-				Options:     []string{"bind"},
+				Options:     []string{"bind", "ro"},
 			},
 		},
 		DefaultContainerMounts...,
